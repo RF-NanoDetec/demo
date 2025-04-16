@@ -101,8 +101,12 @@ def get_filter_response(b, a, fs, show_db):
 def plot_time_domain(t, noisy_signal, filtered_signal):
     """Creates an interactive time-domain plot using Plotly."""
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=t * 1e3, y=noisy_signal, mode='lines', name='Noisy', line=dict(width=1), opacity=0.7))
-    fig.add_trace(go.Scatter(x=t * 1e3, y=filtered_signal, mode='lines', name='Filtered', line=dict(width=2)))
+    # Noisy signal: Light blue, thin, less opaque
+    fig.add_trace(go.Scatter(x=t * 1e3, y=noisy_signal, mode='lines', name='Noisy',
+                             line=dict(width=1, color='lightblue'), opacity=0.6))
+    # Filtered signal: Orange, thicker, fully opaque
+    fig.add_trace(go.Scatter(x=t * 1e3, y=filtered_signal, mode='lines', name='Filtered',
+                             line=dict(width=2.5, color='orange')))
     fig.update_layout(
         title="Time Domain",
         xaxis_title="Time (ms)",
@@ -119,8 +123,12 @@ def plot_frequency_domain(freqs_noisy, mag_noisy, mag_filtered, w_hz, H, ftype, 
     fig = go.Figure()
     yaxis_title = "Magnitude (dB)" if show_db else "Magnitude"
 
-    fig.add_trace(go.Scatter(x=freqs_noisy, y=mag_noisy, mode='lines', name='Noisy', line=dict(width=1), opacity=0.7))
-    fig.add_trace(go.Scatter(x=freqs_noisy, y=mag_filtered, mode='lines', name='Filtered', line=dict(width=2)))
+    # Noisy spectrum: Light blue, thin, less opaque
+    fig.add_trace(go.Scatter(x=freqs_noisy, y=mag_noisy, mode='lines', name='Noisy',
+                             line=dict(width=1, color='lightblue'), opacity=0.6))
+    # Filtered spectrum: Orange, thicker, fully opaque
+    fig.add_trace(go.Scatter(x=freqs_noisy, y=mag_filtered, mode='lines', name='Filtered',
+                             line=dict(width=2.5, color='orange')))
 
     if len(w_hz) > 0 and len(H) > 0 : # Check if filter response exists
         # Scale filter response for visibility
