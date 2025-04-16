@@ -187,6 +187,7 @@ def plot_frequency_domain(freqs_noisy, mag_noisy, mag_filtered, w_hz, H, ftype, 
 # Separate state for base signal (peaks only) and time vector
 if 'base_signal' not in st.session_state:
     st.session_state.base_signal = None
+    st.session_state.unit_noise = None # ADDED: Store unit noise pattern
     st.session_state.t = None
     st.session_state.fs = 10000 # Default fs
     st.session_state.duration_ms = 500 # Default duration
@@ -243,10 +244,13 @@ if regenerate_peaks:
             (peak_height_min, peak_height_max),
             (peak_width_min_ms, peak_width_max_ms)
         )
+        # Generate and store the unit noise pattern as well
+        st.session_state.unit_noise = np.random.randn(len(st.session_state.t))
         st.toast("New peaks generated!", icon="⛰️")
     else:
         # Handle case where time vector is empty (e.g., duration * fs is too small)
         st.session_state.base_signal = np.array([])
+        st.session_state.unit_noise = np.array([]) # Ensure unit noise is also empty
         st.warning("Could not generate signal, duration or sampling frequency might be too low.")
 
 
@@ -274,17 +278,18 @@ show_db = st.sidebar.checkbox("Show magnitude in dB", value=False, key="show_db"
 # -------------------- Validation & Processing --------------------
 st.header("📊 Filtering Results")
 
-# Retrieve base signal and time from state
+# Retrieve base signal, time, and unit noise from state
 base_signal = st.session_state.base_signal
 t = st.session_state.t
+unit_noise = st.session_state.unit_noise
 
-if base_signal is None or t is None:
+if base_signal is None or t is None or unit_noise is None:
     st.warning("Please generate a signal using the sidebar controls.")
     st.stop()
 
-# Generate noise based on CURRENT slider value and add to BASE signal
-# This happens every time, allowing noise slider to update independently
-current_noise = noise_level * np.random.randn(len(t)) if len(t) > 0 else np.array([])
+# Generate noise by scaling the STORED unit noise pattern by the CURRENT slider value
+# This happens every time, allowing noise slider to update amplitude live
+current_noise = noise_level * unit_noise
 noisy_signal = base_signal + current_noise
 
 # Design filter
