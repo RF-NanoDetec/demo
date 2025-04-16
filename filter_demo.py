@@ -241,10 +241,6 @@ with col_time:
 with col_freq:
     st.plotly_chart(plot_frequency_domain(freqs_noisy, mag_noisy, mag_filtered, w_hz, H, ftype, show_db, fs), use_container_width=True)
 
-# Add a little celebration
-if ftype != "none":
-    st.balloons()
-
 st.header("💡 Tips & Info")
 st.markdown(
     f"""
